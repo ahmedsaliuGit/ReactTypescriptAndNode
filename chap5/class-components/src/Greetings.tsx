@@ -1,39 +1,43 @@
 import React from "react";
 
-interface GreetingsProps {
+interface GreetingProps {
   name?: string;
 }
-
-interface GreetingsState {
+interface GreetingState {
   message: string;
 }
 
-class Greetings extends React.Component<GreetingsProps, GreetingsState> {
-  constructor(props: GreetingsProps) {
+export default class Greeting extends React.Component<
+  GreetingProps,
+  GreetingState
+> {
+  constructor(props: GreetingProps) {
     super(props);
 
     this.state = {
-      message: `Hello world, ${props.name}`,
+      message: Greeting.getNewMessage(props.name),
     };
   }
-  state: GreetingsState;
 
-  static getDerivedStateFromProps(
-    props: GreetingsProps,
-    state: GreetingsState
-  ) {
-    console.log("Rendering", props, state);
+  static getDerivedStateFromProps(props: GreetingProps, state: GreetingState) {
+    console.log(props, state);
+    if (props.name && props.name !== state.message) {
+      const newState = { ...state };
+      newState.message = Greeting.getNewMessage(props.name);
+      return newState;
+    }
     return state;
+  }
+
+  static getNewMessage(name: string = "") {
+    return `Hello from, ${name}`;
   }
 
   render() {
     console.log("rendering Greeting");
     if (!this.props.name) {
-      return <div>No name provided!</div>;
-    } else {
-      return <div>{this.state.message}</div>;
+      return <div>no name given</div>;
     }
+    return <div>{this.state.message}</div>;
   }
 }
-
-export default Greetings;
