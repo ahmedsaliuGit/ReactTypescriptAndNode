@@ -7,17 +7,32 @@ const app = express();
 app.use(bodyParser.json());
 app.use((req, res, next) => {
   console.log("First middleware");
-  throw new Error("A failure occurred");
+  next();
 });
 
 app.use(router);
 
-router.get("/a", (req, res) => {
-  res.send("Welcome to route A");
+router.get("/api/v1/users", (req, res) => {
+  const users = [
+    { id: 1, username: "Ahmed" },
+    { id: 2, username: "Linda" },
+    { id: 3, username: "John" },
+  ];
+
+  console.log(req.query.userid);
+  const user = users.find((user) => user.id == req.query.userid);
+  res.send(`User ${user?.username}`);
 });
 
-router.post("/c", (req, res) => {
-  res.send("Hello this is route c. Message is" + req.body.message);
+router.post("/api/v1/groups", (req, res) => {
+  const groups = [
+    { id: 1, groupName: "Admin" },
+    { id: 2, groupName: "Staff" },
+    { id: 3, groupName: "User" },
+  ];
+
+  const group = groups.find((user) => user.id == req.body.id);
+  res.send(`Group Name: ${group?.groupName}`);
 });
 
 app.use((err, req, res, next) => {
