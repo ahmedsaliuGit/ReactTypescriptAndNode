@@ -1,20 +1,37 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { Route, Switch } from "react-router-dom";
 import "./App.css";
-import LeftMenu from "./components/LeftMenu";
-import Main from "./components/Main";
-import Nav from "./components/Nav";
-import RightMenu from "./components/RightMenu";
-import Sidebar from "./components/sidebar/Sidebar";
+import Home from "./components/routes/Home";
+import Thread from "./components/routes/thread/Thread";
+import UserProfile from "./components/routes/userProfile/UserProfile";
+import { UserProfileSetType } from "./store/user/Reducer";
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // todo: replace with GraphQL call
+    dispatch({
+      type: UserProfileSetType,
+      payload: {
+        id: 1,
+        userName: "testUser",
+      },
+    });
+  }, [dispatch]);
+
+  const renderHome = (props: any) => <Home {...props} />;
+  const renderThread = (props: any) => <Thread {...props} />;
+  const renderUserProfile = (props: any) => <UserProfile {...props} />;
+
   return (
-    <div className="App">
-      <Nav />
-      <Sidebar />
-      <LeftMenu />
-      <Main />
-      <RightMenu />
-    </div>
+    <Switch>
+      <Route exact path="/" render={renderHome} />
+      <Route path="/categoryThreads/:categoryId" render={renderHome} />
+      <Route path="/thread/:id" render={renderThread} />
+      <Route path="/userprofile/:id" render={renderUserProfile} />
+    </Switch>
   );
 }
 
