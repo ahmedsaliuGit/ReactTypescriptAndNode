@@ -40,6 +40,7 @@ const Nav = () => {
         isOpen={showMenu}
         onRequestClose={onCloseMenu}
         shouldCloseOnOverlayClick={true}
+        appElement={document.getElementById("root") as HTMLElement}
       >
         <SideBarMenus />
       </ReactModal>

@@ -27,6 +27,7 @@ const typeDefs = gql`
   type Thread {
     id: ID!
     views: Int!
+    points: Int!
     isDisabled: Boolean!
     title: String!
     body: String!
@@ -49,6 +50,7 @@ const typeDefs = gql`
   type ThreadItem {
     id: ID!
     views: Int!
+    points: Int!
     isDisabled: Boolean!
     body: String!
     user: User!
@@ -126,7 +128,7 @@ const typeDefs = gql`
     register(email: String!, userName: String!, password: String!): String!
     login(userName: String!, password: String!): String!
     logout(userName: String!): String!
-    changePassword(userName: String!): String!
+    changePassword(newPassword: String!): String!
   }
 `;
 

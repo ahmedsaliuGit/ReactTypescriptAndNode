@@ -4,6 +4,7 @@ import Redis from "ioredis";
 import session from "express-session";
 import { createConnection } from "typeorm";
 import bodyParser from "body-parser";
+import cors from "cors";
 import { login, logout, register } from "./repo/UserRepo";
 import {
   createThread,
@@ -26,6 +27,7 @@ require("dotenv").config();
 
 const main = async () => {
   const app = express();
+  app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
   const router = express.Router();
   const port = process.env.SERVER_PORT;
 
@@ -186,7 +188,7 @@ const main = async () => {
     schema,
     context: ({ req, res }: any) => ({ req, res }),
   });
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen({ port }, () => {
     console.log(`Server running on port:: ${port}`);

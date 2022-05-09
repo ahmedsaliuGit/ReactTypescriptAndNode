@@ -1,12 +1,20 @@
 import React, { FC, useReducer } from "react";
 import ReactModal from "react-modal";
 import "./Registration.css";
-import { ModalProps } from "../types/ModalProps";
+import ModalProps from "../types/ModalProps";
 import userReducer from "./common/UserReducer";
 import { allowSubmit } from "./common/Helpers";
 import PasswordComparison from "./common/PasswordComparison";
+import { gql, useMutation } from "@apollo/client";
+
+const RegisterMutation = gql`
+  mutation register($email: String!, $userName: String!, $password: String!) {
+    register(email: $email, userName: $userName, password: $password)
+  }
+`;
 
 const Registration: FC<ModalProps> = ({ isOpen, onClickToggle }) => {
+  const [execRegister] = useMutation(RegisterMutation);
   const [
     { userName, password, email, passwordConfirm, resultMsg, isSubmitDisabled },
     dispatch,
@@ -21,23 +29,34 @@ const Registration: FC<ModalProps> = ({ isOpen, onClickToggle }) => {
 
   const onChangeUserName = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({ payload: e.target.value, type: "userName" });
-
     if (!e.target.value)
       allowSubmit(dispatch, "Username cannot be empty", true);
     else allowSubmit(dispatch, "", false);
   };
-
   const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({ payload: e.target.value, type: "email" });
     if (!e.target.value) allowSubmit(dispatch, "Email cannot be empty", true);
     else allowSubmit(dispatch, "", false);
   };
 
-  const onClickRegister = (
+  const onClickRegister = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
-    onClickToggle(e);
+
+    try {
+      const result = await execRegister({
+        variables: {
+          email,
+          userName,
+          password,
+        },
+      });
+      console.log("register result", result);
+      dispatch({ payload: result.data.register, type: "resultMsg" });
+    } catch (ex) {
+      console.log(ex);
+    }
   };
 
   const onClickCancel = (
@@ -52,6 +71,7 @@ const Registration: FC<ModalProps> = ({ isOpen, onClickToggle }) => {
       isOpen={isOpen}
       onRequestClose={onClickToggle}
       shouldCloseOnOverlayClick={true}
+      appElement={document.getElementById("root") as HTMLElement}
     >
       <form>
         <div className="reg-inputs">
@@ -63,11 +83,13 @@ const Registration: FC<ModalProps> = ({ isOpen, onClickToggle }) => {
             <label>email</label>
             <input type="text" value={email} onChange={onChangeEmail} />
           </div>
-          <PasswordComparison
-            dispatch={dispatch}
-            password={password}
-            passwordConfirm={passwordConfirm}
-          />
+          <div>
+            <PasswordComparison
+              dispatch={dispatch}
+              password={password}
+              passwordConfirm={passwordConfirm}
+            />
+          </div>
         </div>
         <div className="form-buttons">
           <div className="form-btn-left">

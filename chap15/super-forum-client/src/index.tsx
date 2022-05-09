@@ -5,14 +5,23 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import configureStore from "./store/configureStore";
 import ErrorBoundary from "./components/ErrorBoundary";
+
+const client = new ApolloClient({
+  uri: "http://localhost:81/graphql",
+  credentials: "include",
+  cache: new InMemoryCache({ resultCaching: false }),
+});
 
 ReactDOM.render(
   <Provider store={configureStore()}>
     <BrowserRouter>
       <React.StrictMode>
-        <ErrorBoundary>{[<App key="App" />]}</ErrorBoundary>
+        <ApolloProvider client={client}>
+          <ErrorBoundary>{[<App key="App" />]}</ErrorBoundary>
+        </ApolloProvider>
       </React.StrictMode>
     </BrowserRouter>
   </Provider>,
